@@ -1,4 +1,5 @@
 {
   "stack_port" : "5050",
-  "stack_path" : "D:\\stack-test\\"
+  "stack_path" : "D:\\stack-test\\",
+  "stack_ram_path" : "D:\\stack-test\\ram\\"
 }
