@@ -1,7 +1,9 @@
 package com.sufnom.stack;
 
 import com.sufnom.stack.def.DynamicStackInterface;
+import com.sufnom.stack.def.ExtendedStackInterface;
 import com.sufnom.stack.def.FixedStackInterface;
+import com.sufnom.stack.def.ZedIndexer;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -32,6 +34,12 @@ public class StackTerminal {
                 case TYPE_FIXED_STACK:
                     return processFixedStack((FixedStackInterface)stack,
                             command, dataBytes);
+                case TYPE_DYNAMIC_STACK:
+                    return processDynamicStack((DynamicStackInterface)stack,
+                            command,dataBytes);
+                case TYPE_EXTENDED_STACK:
+                    return processExtendedStack((ExtendedStackInterface)stack,
+                            command,dataBytes);
             }
         }
         catch (Exception e){
@@ -75,9 +83,24 @@ public class StackTerminal {
         return blockId;
     }
 
-    private byte[] processExtendedStack(FixedStackInterface stack,
+    private byte[] processExtendedStack(ExtendedStackInterface stack,
                         String command, byte[] dataBytes) throws Exception{
-        return null;
+        byte[] rawUid = new byte[ZedIndexer.MAX_KEY_LENGTH];
+        byte[] rawData = new byte[dataBytes.length - rawUid.length];
+        System.arraycopy(dataBytes, 0, rawUid, 0, rawUid.length);
+        System.arraycopy(rawData, rawUid.length, rawData, 0, rawData.length);
+        String uid = new String(rawUid);
+        switch (command){
+            case COMMAND_INSERT:
+                return stack.insertData(uid, rawData) ?
+                        "ok".getBytes() : "error".getBytes();
+            case COMMAND_GET:
+                return stack.getData(uid);
+            case COMMAND_UPDATE:
+                return stack.updateData(uid, rawData) ?
+                        "ok".getBytes() : "error".getBytes();
+        }
+        throw new Exception("Command Not Matched");
     }
 
     private byte[] processDynamicStack(DynamicStackInterface stack,
@@ -95,8 +118,7 @@ public class StackTerminal {
         switch (type){
             case TYPE_FIXED_STACK: return new FixedStackInterface(target);
             case TYPE_DYNAMIC_STACK: return new DynamicStackInterface(target);
-            //TODO need to add extended stacks
-            case TYPE_EXTENDED_STACK: return null;
+            case TYPE_EXTENDED_STACK: return new ExtendedStackInterface(target);
         }
         return null;
     }
