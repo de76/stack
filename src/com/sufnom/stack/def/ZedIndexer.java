@@ -178,8 +178,10 @@ public class ZedIndexer {
                 break;
             }
             dataPointer += 12;
-            if ( dataPointer >= maxPossiblePointer)
-                return -1;
+            if ( dataPointer >= maxPossiblePointer){
+                parentBlockId = -1;
+                break;
+            }
         }
         bufferOfBlockId.clear();
         bufferOfPointedSum.clear();

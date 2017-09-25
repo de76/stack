@@ -65,24 +65,6 @@ public class StackTerminal {
         throw new Exception("Command Not Matched");
     }
 
-    private byte[] convertToBytes(long blockId){
-        ByteBuffer buffer = ByteBuffer.allocate(8);
-        buffer.putLong(0, blockId);
-        byte[] result = buffer.array();
-        buffer.clear();
-        return result;
-    }
-
-    private long getBlockId(byte[] dataBlock){
-        ByteBuffer buffer = ByteBuffer.allocate(8);
-        byte[] blockHead = new byte[8];
-        System.arraycopy(dataBlock,0,blockHead,0,8);
-        buffer.put(blockHead);
-        long blockId = buffer.getLong(0);
-        buffer.clear();
-        return blockId;
-    }
-
     private byte[] processExtendedStack(ExtendedStackInterface stack,
                         String command, byte[] dataBytes) throws Exception{
         byte[] rawUid = new byte[ZedIndexer.MAX_KEY_LENGTH];
@@ -112,6 +94,24 @@ public class StackTerminal {
                 return stack.readBlock(getBlockId(dataBytes));
         }
         throw new Exception("Command Not Matched");
+    }
+
+    private byte[] convertToBytes(long blockId){
+        ByteBuffer buffer = ByteBuffer.allocate(8);
+        buffer.putLong(0, blockId);
+        byte[] result = buffer.array();
+        buffer.clear();
+        return result;
+    }
+
+    private long getBlockId(byte[] dataBlock){
+        ByteBuffer buffer = ByteBuffer.allocate(8);
+        byte[] blockHead = new byte[8];
+        System.arraycopy(dataBlock,0,blockHead,0,8);
+        buffer.put(blockHead);
+        long blockId = buffer.getLong(0);
+        buffer.clear();
+        return blockId;
     }
 
     private Object connectToStack(String target, String type){
