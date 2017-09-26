@@ -4,6 +4,8 @@ package com.sufnom.stack.def.head;
 import com.sufnom.stack.def.FixedStackInterface;
 import com.sufnom.stack.def.ZedIndexer;
 
+import java.nio.ByteBuffer;
+
 import static com.sufnom.Main.debug;
 
 public abstract class UidStackInterface extends AbstractUidStackInterface {
@@ -60,11 +62,23 @@ public abstract class UidStackInterface extends AbstractUidStackInterface {
             if (data.length > FixedStackInterface.blockSize)
                 return false;
             long blockId = stackInterface.insert(data);
+            byte[] blockIdBytes = getRawBlockId(blockId);
+            System.arraycopy(blockIdBytes, 0, data, 0, blockIdBytes.length);
+            stackInterface.updateBlock(blockId, data);
             indexer.insertIndex(uid, blockId);
             if (debug) System.out.println("Profile Inserted : uid = " + uid + ", blockId = " + blockId );
             return true;
         }
         catch (Exception e){e.printStackTrace();}
         return false;
+    }
+
+    private byte[] getRawBlockId(long blockId){
+        byte[] rawBlockId;
+        ByteBuffer buffer = ByteBuffer.allocate(8);
+        buffer.putLong(0, blockId);
+        rawBlockId = buffer.array();
+        buffer.clear();
+        return rawBlockId;
     }
 }
