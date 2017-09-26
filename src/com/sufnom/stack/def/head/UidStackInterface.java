@@ -25,11 +25,15 @@ public abstract class UidStackInterface extends AbstractUidStackInterface {
             }
             if (data.length > FixedStackInterface.blockSize)
                 return false;
-            stackInterface.updateBlock(blockId, data);
-            return true;
+            return updateData(blockId, data);
         }
         catch (Exception e){e.printStackTrace();}
         return false;
+    }
+
+    public boolean updateData(long blockId, byte[] data) throws Exception{
+        stackInterface.updateBlock(blockId, data);
+        return true;
     }
 
     @Override
@@ -40,10 +44,14 @@ public abstract class UidStackInterface extends AbstractUidStackInterface {
                 if (debug) System.out.println("blockId Not Found : " + uid);
                 return null;
             }
-            return stackInterface.readBlock(blockId);
+            return getData(blockId);
         }
         catch (Exception e){e.printStackTrace();}
         return null;
+    }
+
+    public byte[] getData(long blockId) throws Exception{
+        return stackInterface.readBlock(blockId);
     }
 
     @Override
