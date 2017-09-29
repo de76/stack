@@ -14,6 +14,7 @@ public class StackTerminal {
 
     public static final String COMMAND_INSERT = "insert";
     public static final String COMMAND_GET = "get";
+    public static final String COMMAND_GETX = "getX";
     public static final String COMMAND_UPDATE = "update";
 
     public static final String TYPE_FIXED_STACK = "fsi";
@@ -67,6 +68,9 @@ public class StackTerminal {
 
     private byte[] processExtendedStack(ExtendedStackInterface stack,
                         String command, byte[] dataBytes) throws Exception{
+        if (command.equals(COMMAND_GETX))
+            return stack.getData(getBlockId(dataBytes));
+
         byte[] rawUid = new byte[ZedIndexer.MAX_KEY_LENGTH];
         byte[] rawData = new byte[dataBytes.length - rawUid.length];
         System.arraycopy(dataBytes, 0, rawUid, 0, rawUid.length);
@@ -104,6 +108,9 @@ public class StackTerminal {
         return result;
     }
 
+    /*
+    Gets Block Id from a data stream with header and detail
+    */
     private long getBlockId(byte[] dataBlock){
         ByteBuffer buffer = ByteBuffer.allocate(8);
         byte[] blockHead = new byte[8];
